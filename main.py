@@ -1,6 +1,15 @@
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 import datetime
+import pandas
+from collections import defaultdict
+import argparse
+
+def get_cli_argumets():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('file_path')
+    file_path = parser.parse_args().file_path
+    return file_path
 
 def get_correct_year_name(winery_age):
     last_two_digit = winery_age % 100
@@ -12,24 +21,41 @@ def get_correct_year_name(winery_age):
     else:
         return 'лет'
 
-def get_winery_age():
+
+def get_winery_age(year_of_create):
     now = datetime.datetime.now()
     year_now =  now.year
-    date_of_create = datetime.datetime(year=1920, month=1, day=1, hour=0)
-    year_of_create = date_of_create.year
     winery_age = year_now - year_of_create
     return winery_age
 
 
-if __name__=='__main__':
+def get_wine_catalog(wine_data_file_name):
+    wines = pandas.read_excel(
+        wine_data_file_name,
+        keep_default_na=False
+    )
+    wines =  wines.to_dict(orient='records')
+    wine_catalog = defaultdict(list)
+    for wine in wines:
+        wine_catalog[wine['Категория']].append(wine)
+    return wine_catalog
+
+
+if __name__ == '__main__':
+    wine_data_file_name = get_cli_argumets()
+    year_of_create = 1920
+    winery_age = get_winery_age(year_of_create)
+    correct_year_name = get_correct_year_name(winery_age)
+    wines_catalog = get_wine_catalog(wine_data_file_name)
     env = Environment(
         loader=FileSystemLoader('.'),
-        autoescape=select_autoescape(['j2'])
+        autoescape=select_autoescape(['html', 'xml'])
     )
-    template = env.get_template('index.j2')
+    template = env.get_template('template.html')
     rendered_page = template.render(
-        winery_age = get_winery_age(),
-        correct_year_name = get_correct_year_name(get_winery_age())
+        wines_catalog = wines_catalog,
+        winery_age=winery_age,
+        correct_year_name=correct_year_name,
     )
     with open('index.html', 'w', encoding="utf8") as file:
         file.write(rendered_page)
