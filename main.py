@@ -5,11 +5,13 @@ import pandas
 from collections import defaultdict
 import argparse
 
+
 def get_cli_argumets():
     parser = argparse.ArgumentParser()
     parser.add_argument('file_path')
     file_path = parser.parse_args().file_path
     return file_path
+
 
 def get_correct_year_name(winery_age):
     last_two_digit = winery_age % 100
@@ -24,7 +26,7 @@ def get_correct_year_name(winery_age):
 
 def get_winery_age(year_of_create):
     now = datetime.datetime.now()
-    year_now =  now.year
+    year_now = now.year
     winery_age = year_now - year_of_create
     return winery_age
 
@@ -34,7 +36,7 @@ def get_wine_catalog(wine_data_file_name):
         wine_data_file_name,
         keep_default_na=False
     )
-    wines =  wines.to_dict(orient='records')
+    wines = wines.to_dict(orient='records')
     wine_catalog = defaultdict(list)
     for wine in wines:
         wine_catalog[wine['Категория']].append(wine)
@@ -53,7 +55,7 @@ if __name__ == '__main__':
     )
     template = env.get_template('template.html')
     rendered_page = template.render(
-        wines_catalog = wines_catalog,
+        wines_catalog=wines_catalog,
         winery_age=winery_age,
         correct_year_name=correct_year_name,
     )
