@@ -9,7 +9,7 @@
 ```
 pip install -r requirements.txt
 ```
-- Проверьте наличие файла с filename.xlsx к каталоге с программой. 
+- Проверьте наличие файла с filename.xlsx к каталоге с программой и заполните его своими данными. 
 - Запустите сайт командой 
 ```
 python3 main.py filename.xlsx
