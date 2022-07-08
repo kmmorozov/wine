@@ -8,7 +8,7 @@ import argparse
 
 def get_cli_argumets():
     parser = argparse.ArgumentParser()
-    parser.add_argument('file_path')
+    parser.add_argument('--file_path',type=str,default='wine_catalog.xlsx')
     file_path = parser.parse_args().file_path
     return file_path
 
